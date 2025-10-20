@@ -15,10 +15,11 @@ def get_background(name,WIDTH,HEIGHT):
 
     return tiles, image
 
-def draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen):
+def draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0):
     for pos in bg_tiles:
         base_surface.blit(bg_image, pos)
-        
+    for block in floor:
+        block.draw(base_surface, camera_x, camera_y)
     
     
     

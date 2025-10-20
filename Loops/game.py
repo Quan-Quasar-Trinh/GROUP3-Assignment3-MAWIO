@@ -2,8 +2,10 @@ import pygame
 import sys
 from utils.gameFunc import draw, get_background
 from utils.button import Button
-
+from entity.terrain import Terrain
+from level.level import Level1, Level2, Level3
 def game(WIDTH, HEIGHT, sound_volume, level=1):
+    
     pygame.init()
     pygame.display.set_caption("Game Loop")
 
@@ -16,7 +18,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
 
     # --- Load background and gear icon ---
     bg_tiles, bg_image = get_background("Blue.png", BASE_WIDTH, BASE_HEIGHT)
-    gear_img = pygame.image.load("assets/img/icon/setting.png")
+    gear_img = pygame.image.load("assets/img/icon/setting.png").convert_alpha()
     gear_size = int(BASE_WIDTH * 0.04)
     gear_img = pygame.transform.scale(gear_img, (gear_size, gear_size))
     gear_rect = gear_img.get_rect(topright=(BASE_WIDTH - 20, 20))
@@ -31,7 +33,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         (1280, 720)
     ]
     current_res_index = resolutions.index((WIDTH, HEIGHT)) if (WIDTH, HEIGHT) in resolutions else 5
-
+    block_size = 64
     # --- Font ---
     font_size = int(BASE_WIDTH * 0.04)
     font = pygame.font.Font(None, font_size)
@@ -51,10 +53,22 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     
     def load_level(level):
         print(f"Loading level {level}...")
-        
+        if level == 1:
+            return Level1()
+        elif level == 2:
+            return Level2()
+        elif level == 3:
+            return Level3()
+        else:
+            print("No more levels! Returning to menu.")
+            return None
+            
     
     
-
+    tiles = load_level(level)
+    terrain_positions = tiles.get_terrain()
+    camera_x = 0
+    camera_y = 32
     running = True
     while running:
         for event in pygame.event.get():
@@ -72,8 +86,10 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                         setting = False
                     else:
                         return "menu", WIDTH, HEIGHT, sound_volume, 1
+                
+                
                 #dev cheat
-                elif event.key == pygame.K_l:
+                elif event.key == pygame.K_p:
                     level += 1
                     print(f"Level increased to {level}")
                     return "game", WIDTH, HEIGHT, sound_volume, level
@@ -103,8 +119,22 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                 else:
                     if gear_rect.collidepoint(adj_mouse):
                         setting = True
+        keys = pygame.key.get_pressed()
+                
+        if keys[pygame.K_j]:
+            camera_x -= 10
+        if keys[pygame.K_k]:
+            camera_y += 10
+        if keys[pygame.K_i]:
+            camera_y -= 10
+        if keys[pygame.K_l]:
+            camera_x += 10
+        # Clamp camera to map boundaries
+        camera_x = max(0, min(camera_x, tiles.map_size[0] - BASE_WIDTH))
+        camera_y = max(0, min(camera_y, tiles.map_size[1] - BASE_HEIGHT))
+
         # --- Drawing ---
-        draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen)
+        draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y)
 
         
 
