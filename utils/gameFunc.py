@@ -3,6 +3,8 @@ import sys
 import os
 from os.path import join
 
+PLAYER_VEL = 5
+
 def get_background(name,WIDTH,HEIGHT):
     image = pygame.image.load(join("assets","img","BG","game_bg",name))
     _, _, width, height = image.get_rect()
@@ -15,12 +17,25 @@ def get_background(name,WIDTH,HEIGHT):
 
     return tiles, image
 
-def draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0):
+def draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None):
     for pos in bg_tiles:
         base_surface.blit(bg_image, pos)
     for block in floor:
         block.draw(base_surface, camera_x, camera_y)
-    
+        pygame.draw.rect(
+        base_surface,
+        (0, 255, 0),
+        (
+            block.rect.x - camera_x,
+            block.rect.y - camera_y,
+            block.rect.width,
+            block.rect.height
+        ),
+        1
+    )
+    if player:
+        player.draw(base_surface, camera_x, camera_y)
+        pygame.draw.rect(base_surface, (255, 0, 0), (player.rect.x - camera_x, player.rect.y - camera_y, player.width, player.height), 2)
     
     
     
@@ -84,3 +99,45 @@ def draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WI
     scaled_surface = pygame.transform.smoothscale(base_surface, (scaled_width, scaled_height))
     screen.fill((0, 0, 0))  # letterbox background
     screen.blit(scaled_surface, (offset_x, offset_y))
+
+def handle_vertical_collision(player, objects, dy):
+    collided_objects = []
+    for obj in objects:
+        if player.rect.colliderect(obj.rect):
+            if dy > 0:
+                player.rect.bottom = obj.rect.top
+                player.landed()
+            elif dy < 0:
+                player.rect.top = obj.rect.bottom
+                player.hit_head()
+
+            collided_objects.append(obj)
+    return collided_objects
+
+
+
+def collide(player, objects, dx):
+    player.move(dx, 0)
+    collided_object = None
+    for obj in objects:
+        if player.rect.colliderect(obj.rect):
+            collided_object = obj
+            break
+    player.move(-dx, 0)
+    return collided_object
+
+
+def handle_move(player, objects):
+    keys = pygame.key.get_pressed()
+
+    player.vx = 0
+    collide_left = collide(player, objects, -PLAYER_VEL * 2)
+    collide_right = collide(player, objects, PLAYER_VEL * 2)
+
+    if keys[pygame.K_a] and not collide_left:
+        player.move_left(PLAYER_VEL)
+    if keys[pygame.K_d] and not collide_right:
+        player.move_right(PLAYER_VEL)
+
+    vertical_collide = handle_vertical_collision(player, objects, player.vy)
+    to_check = [collide_left, collide_right, *vertical_collide]

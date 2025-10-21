@@ -1,9 +1,14 @@
 import pygame
 import sys
-from utils.gameFunc import draw, get_background
+from utils.gameFunc import draw, get_background, handle_move
 from utils.button import Button
 from entity.terrain import Terrain
 from level.level import Level1, Level2, Level3
+from entity.player import Player
+
+
+FPS = 60
+
 def game(WIDTH, HEIGHT, sound_volume, level=1):
     
     pygame.init()
@@ -66,11 +71,13 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     
     
     tiles = load_level(level)
+    player = Player(tiles.spawn[0], tiles.spawn[1], 50, 50)
     terrain_positions = tiles.get_terrain()
     camera_x = 0
     camera_y = 32
     running = True
     while running:
+        clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -86,6 +93,9 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                         setting = False
                     else:
                         return "menu", WIDTH, HEIGHT, sound_volume, 1
+                
+                elif event.key == pygame.K_SPACE and player.jump_count < 2:
+                    player.jump()
                 
                 
                 #dev cheat
@@ -132,13 +142,16 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         # Clamp camera to map boundaries
         camera_x = max(0, min(camera_x, tiles.map_size[0] - BASE_WIDTH))
         camera_y = max(0, min(camera_y, tiles.map_size[1] - BASE_HEIGHT))
+        
+        
+        player.loop(FPS)
+        handle_move(player, terrain_positions)
 
         # --- Drawing ---
-        draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y)
+        draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player)
 
         
 
         pygame.display.flip()
-        clock.tick(60)
 
     pygame.quit()

@@ -61,7 +61,7 @@ class Level1(Level):
 
         super().__init__(
             level_id=1,
-            spawn=(100, 704 - 128),
+            spawn=(500, 500),
             map_size=(5120, 704),
             terrain_matrix=terrain_matrix
         )
