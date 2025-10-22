@@ -6,6 +6,7 @@ from os import listdir
 from os.path import isfile, join
 
 from entity.obj import Object
+from entity.proj import Proj
 
 
 def flip(sprites):
@@ -86,6 +87,16 @@ class Player(Object):
         if self.jump_count == 1:
             self.fall_count = 0
             
+    def shoot(self, nor, spe, setting):
+        # Calculate projectile spawn position at player's center
+        proj_x = self.rect.centerx
+        proj_y = self.rect.centery
+
+        if not setting:
+            nor.append(Proj(proj_x, proj_y, True, False, self.direction))
+        else:
+            spe.append(Proj(proj_x, proj_y, True, True, self.direction))
+
     def landed(self):
         self.fall_count = 0
         self.vy = 0

@@ -5,7 +5,7 @@ from utils.button import Button
 from entity.terrain import Terrain
 from level.level import Level1, Level2, Level3
 from entity.player import Player
-
+from entity.proj import Proj
 
 FPS = 60
 
@@ -75,6 +75,10 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     terrain_positions = tiles.get_terrain()
     camera_x = 0
     camera_y = 32
+    
+    nor_projs = []
+    spe_projs = []
+    
     running = True
     while running:
         clock.tick(FPS)
@@ -96,7 +100,10 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                 
                 elif event.key == pygame.K_SPACE and player.jump_count < 2:
                     player.jump()
-                
+                elif event.key == pygame.K_h:
+                    player.shoot(nor_projs, spe_projs, setting)
+                elif event.key == pygame.K_TAB or event.key == pygame.K_u:
+                    setting = not setting
                 
                 #dev cheat
                 elif event.key == pygame.K_p:
@@ -131,24 +138,41 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                         setting = True
         keys = pygame.key.get_pressed()
                 
-        if keys[pygame.K_j]:
-            camera_x -= 10
-        if keys[pygame.K_k]:
-            camera_y += 10
-        if keys[pygame.K_i]:
-            camera_y -= 10
-        if keys[pygame.K_l]:
-            camera_x += 10
-        # Clamp camera to map boundaries
+        # --- Smart camera follow with 30px dead zone ---
+        DEAD_ZONE = 30
+        SMOOTHNESS = 0.1  # smaller = smoother (slower), larger = snappier
+
+# Target camera position centered on player
+        target_x = player.rect.centerx - BASE_WIDTH // 2
+        target_y = player.rect.centery - BASE_HEIGHT // 2
+
+        # Calculate distance from current camera center to player center
+        dx = player.rect.centerx - (camera_x + BASE_WIDTH // 2)
+        dy = player.rect.centery - (camera_y + BASE_HEIGHT // 2)
+
+        # Only move camera if player leaves dead zone or to slowly recenter when stopped
+        if abs(dx) > DEAD_ZONE or abs(dy) > DEAD_ZONE:
+            camera_x += dx * SMOOTHNESS
+            camera_y += dy * SMOOTHNESS
+        else:
+            # Slowly move toward player even when inside dead zone (gentle recenter)
+            camera_x += dx * (SMOOTHNESS / 5)
+            camera_y += dy * (SMOOTHNESS / 5)
+
+        # Clamp camera to level bounds
+        # Clamp camera to level bounds
         camera_x = max(0, min(camera_x, tiles.map_size[0] - BASE_WIDTH))
         camera_y = max(0, min(camera_y, tiles.map_size[1] - BASE_HEIGHT))
-        
+
+
         
         player.loop(FPS)
+        for proj in (nor_projs+spe_projs):
+            proj.update()
         handle_move(player, terrain_positions)
 
         # --- Drawing ---
-        draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player)
+        draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs)
 
         
 
