@@ -6,13 +6,14 @@ from entity.terrain import Terrain
 from level.level import Level1, Level2, Level3
 from entity.player import Player
 from entity.proj import Proj
+from entity.enemy import Enemy, MeleeEnemy
 
 FPS = 60
 
 def game(WIDTH, HEIGHT, sound_volume, level=1):
     
     pygame.init()
-    pygame.display.set_caption("Game Loop")
+    pygame.display.set_caption("MAWIO")
 
     BASE_WIDTH, BASE_HEIGHT = 1280, 720  # internal 16:9 resolution
     base_surface = pygame.Surface((BASE_WIDTH, BASE_HEIGHT))
@@ -23,6 +24,10 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
 
     # --- Load background and gear icon ---
     bg_tiles, bg_image = get_background("Blue.png", BASE_WIDTH, BASE_HEIGHT)
+    bg_surface = pygame.Surface((WIDTH, HEIGHT))
+    for pos in bg_tiles:
+        bg_surface.blit(bg_image, pos)
+    
     gear_img = pygame.image.load("assets/img/icon/setting.png").convert_alpha()
     gear_size = int(BASE_WIDTH * 0.04)
     gear_img = pygame.transform.scale(gear_img, (gear_size, gear_size))
@@ -76,6 +81,13 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     camera_x = 0
     camera_y = 32
     
+    Nor_enemies = []
+    Spe_enemies = []
+    Nor_enemies.append(MeleeEnemy(200, 200, 32, 32, False))
+    Nor_enemies.append(Enemy(300, 200, 32, 32,False , 100, "Range"))
+    Spe_enemies.append(MeleeEnemy(200, 300, 32, 32, True))
+    Spe_enemies.append(Enemy(300, 300, 32, 32,True , 100, "Range"))
+
     nor_projs = []
     spe_projs = []
     
@@ -142,37 +154,41 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         DEAD_ZONE = 30
         SMOOTHNESS = 0.1  # smaller = smoother (slower), larger = snappier
 
-# Target camera position centered on player
-        target_x = player.rect.centerx - BASE_WIDTH // 2
-        target_y = player.rect.centery - BASE_HEIGHT // 2
+
+
 
         # Calculate distance from current camera center to player center
         dx = player.rect.centerx - (camera_x + BASE_WIDTH // 2)
-        dy = player.rect.centery - (camera_y + BASE_HEIGHT // 2)
+
 
         # Only move camera if player leaves dead zone or to slowly recenter when stopped
-        if abs(dx) > DEAD_ZONE or abs(dy) > DEAD_ZONE:
+        if abs(dx) > DEAD_ZONE:
             camera_x += dx * SMOOTHNESS
-            camera_y += dy * SMOOTHNESS
         else:
             # Slowly move toward player even when inside dead zone (gentle recenter)
             camera_x += dx * (SMOOTHNESS / 5)
-            camera_y += dy * (SMOOTHNESS / 5)
 
         # Clamp camera to level bounds
         # Clamp camera to level bounds
         camera_x = max(0, min(camera_x, tiles.map_size[0] - BASE_WIDTH))
-        camera_y = max(0, min(camera_y, tiles.map_size[1] - BASE_HEIGHT))
 
 
         
         player.loop(FPS)
-        for proj in (nor_projs+spe_projs):
+        for proj in (nor_projs):
             proj.update()
+            if proj.x<-100 or proj.x > tiles.map_size[0]:
+                nor_projs.remove(proj)
+                print("removed nor")
+        for proj in (spe_projs):
+            proj.update()
+            if proj.x<-100 or proj.x > tiles.map_size[0]:
+                spe_projs.remove(proj)
+                print("removed spe")
         handle_move(player, terrain_positions)
 
         # --- Drawing ---
-        draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs)
+        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies)
 
         
 

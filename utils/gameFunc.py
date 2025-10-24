@@ -17,24 +17,27 @@ def get_background(name,WIDTH,HEIGHT):
 
     return tiles, image
 
-def draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None, nor =[], spe = []):
-    for pos in bg_tiles:
-        base_surface.blit(bg_image, pos)
+def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None, nor =[], spe = [] , Nor_enemies = [], Spe_enemies = []):
+    base_surface.blit(bg_surface, (0, 0))
+
     for block in floor:
         block.draw(base_surface, camera_x, camera_y)
-        pygame.draw.rect(
-        base_surface,
-        (0, 255, 0),
-        (
-            block.rect.x - camera_x,
-            block.rect.y - camera_y,
-            block.rect.width,
-            block.rect.height
-        ),
-        1
-    )
-        for proj in nor:
-            proj.draw(base_surface, camera_x, camera_y)
+        if setting:
+            pygame.draw.rect(
+            base_surface,
+            (0, 255, 0),
+            (
+                block.rect.x - camera_x,
+                block.rect.y - camera_y,
+                block.rect.width,
+                block.rect.height
+            ),
+            1
+        )
+    for Enemy in Nor_enemies:
+        Enemy.draw(base_surface, camera_x, camera_y, setting)
+    for proj in nor:
+        proj.draw(base_surface, camera_x, camera_y)
     
     
     
@@ -75,18 +78,8 @@ def draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WI
 
         menu_button.rect.center = (center_x, sound_y + line_gap * 2.3)
         menu_button.draw(base_surface)
-        for block in floor:
-            pygame.draw.rect(
-            base_surface,
-            (0, 255, 0),
-            (
-                block.rect.x - camera_x,
-                block.rect.y - camera_y,
-                block.rect.width,
-                block.rect.height
-            ),
-            1
-        )
+
+            
 
     else:
         base_surface.blit(gear_img, gear_rect)
@@ -96,6 +89,8 @@ def draw(base_surface, bg_tiles, bg_image, setting, gear_img, gear_rect, BASE_WI
         player.draw(base_surface, camera_x, camera_y)
         if setting:
             pygame.draw.rect(base_surface, (255, 0, 0), (player.rect.x - camera_x, player.rect.y - camera_y, player.width, player.height), 2)
+    for Enemy in Spe_enemies:
+        Enemy.draw(base_surface, camera_x, camera_y, setting)
     for proj in spe:
         proj.draw(base_surface, camera_x, camera_y)
     window_ratio = WIDTH / HEIGHT

@@ -32,6 +32,7 @@ class Proj:
             self.x -= self.speed
         else:
             self.x += self.speed
+        
 
     def draw(self, surface, offsetX, offsetY):
         """Draw projectile as a thin rectangle."""
