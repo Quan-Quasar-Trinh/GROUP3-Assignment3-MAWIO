@@ -18,12 +18,12 @@ def load_sprite_sheets(path, width, height):
         # Scale 3x for better visibility
         frame_surface = pygame.transform.scale(frame_surface, (width * 3, height * 3))
         frames.append(frame_surface)
-    return frames[:-1]
+    return frames[:-2]
 
 
 class Coin(Object):
     def __init__(self, x, y, volume):
-        super().__init__(x, y, 32, 32, "Coin")
+        super().__init__(x, y, 48, 48, "Coin")
         
         self.frames = load_sprite_sheets("assets/img/coin/Coin.png", 16, 16)
         print("Loaded coin frames:", len(self.frames))
@@ -55,6 +55,9 @@ class Coin(Object):
     def draw(self, screen, camera_x, camera_y):
         if not self.collected:
             screen.blit(self.image, (self.rect.x - camera_x, self.rect.y - camera_y))
+            pygame.draw.rect(screen, (255, 0, 0), 
+                         pygame.Rect(self.rect.x - camera_x, self.rect.y - camera_y, 
+                                     self.rect.width, self.rect.height), 2)
             
     def adj_vol(self, new_vol):
         if(new_vol == 0):
