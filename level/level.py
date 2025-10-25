@@ -79,7 +79,7 @@ class Level1(Level):
             spawn=(100, 610),
             map_size=(5120, 704),
             terrain_matrix=terrain_matrix,
-            coins=[Coin(400, 500), Coin(600, 500)]
+            coins=[Coin(400, 500, 100), Coin(600, 500, 100)]
         )
 
 
@@ -110,7 +110,7 @@ class Level2(Level):
             spawn=(150, 704 - 160),
             map_size=(5120, 704),
             terrain_matrix=terrain_matrix,
-            coins=[Coin(950, 300), Coin(1150, 300)]
+            coins=[Coin(950, 300, 100), Coin(1150, 300, 100)]
         )
 
 
@@ -139,5 +139,5 @@ class Level3(Level):
             spawn=(100, 704 - 192),
             map_size=(1280, 720),
             terrain_matrix=terrain_matrix,
-            coins=[Coin(200, 500), Coin(400, 500), Coin (290, 360), Coin (290, 160)]
+            coins=[Coin(200, 500, 100), Coin(400, 500, 100), Coin (290, 360, 100), Coin (290, 160, 100)]
         )

@@ -22,7 +22,7 @@ def load_sprite_sheets(path, width, height):
 
 
 class Coin(Object):
-    def __init__(self, x, y):
+    def __init__(self, x, y, volume):
         super().__init__(x, y, 32, 32, "Coin")
         
         self.frames = load_sprite_sheets("assets/img/coin/Coin.png", 16, 16)
@@ -34,7 +34,7 @@ class Coin(Object):
 
         self.collected = False
         self.sound = pygame.mixer.Sound("assets/sfx/coin.wav")
-        # self.sound = None
+        self.sound.set_volume(volume / 100)
 
     def update(self, player):
         """Animate and detect collection."""
@@ -55,3 +55,9 @@ class Coin(Object):
     def draw(self, screen, camera_x, camera_y):
         if not self.collected:
             screen.blit(self.image, (self.rect.x - camera_x, self.rect.y - camera_y))
+            
+    def adj_vol(self, new_vol):
+        if(new_vol == 0):
+            self.sound = None
+        else:
+            self.sound.set_volume(new_vol / 100)

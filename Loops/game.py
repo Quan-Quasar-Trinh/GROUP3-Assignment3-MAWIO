@@ -76,10 +76,13 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
             
     
     
-    tiles = load_level(level)
+    tiles = load_level(level)    
     coins_spawn = tiles.coins
+    for coin in coins_spawn:
+        coin.adj_vol(sound_volume)
     player = Player(tiles.spawn[0], tiles.spawn[1], 50, 50)
     terrain_positions = tiles.get_terrain()
+        
     camera_x = 0
     camera_y = 32
     
@@ -121,9 +124,13 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                 
                 #dev cheat
                 elif event.key == pygame.K_p:
-                    level += 1
-                    print(f"Level increased to {level}")
-                    return "game", WIDTH, HEIGHT, sound_volume, level
+                    if level < 3:
+                        level += 1
+                        print(f"Level increased to {level}")
+                        return "game", WIDTH, HEIGHT, sound_volume, level
+                    else:
+                        print("Reached final level, returning to menu...")
+                        return "menu", WIDTH, HEIGHT, sound_volume, 1
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pygame.mouse.get_pos()
@@ -145,8 +152,12 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                         res_button.text = f"{WIDTH}x{HEIGHT}"
                     elif vol_minus.is_clicked(adj_mouse):
                         sound_volume = max(0, sound_volume - 10)
+                        for coin in coins_spawn:
+                            coin.adj_vol(sound_volume)
                     elif vol_plus.is_clicked(adj_mouse):
                         sound_volume = min(100, sound_volume + 10)
+                        for coin in coins_spawn:
+                            coin.adj_vol(sound_volume)
                 else:
                     if gear_rect.collidepoint(adj_mouse):
                         setting = True
@@ -190,7 +201,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         handle_move(player, terrain_positions)
         
         # --- Smooth the coin collecting action ---
-        for coin in tiles.coins[:]:
+        for coin in coins_spawn[:]:
             coin.update(player)
             if coin.collected:
                 tiles.coins.remove(coin)
