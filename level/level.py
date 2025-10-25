@@ -110,7 +110,7 @@ class Level2(Level):
             spawn=(150, 704 - 160),
             map_size=(5120, 704),
             terrain_matrix=terrain_matrix,
-            coins=[Coin(1000, 300), Coin(1200, 300)]
+            coins=[Coin(950, 300), Coin(1150, 300)]
         )
 
 

@@ -33,8 +33,8 @@ class Coin(Object):
         self.image = self.frames[0]
 
         self.collected = False
-        # self.sound = pygame.mixer.Sound("")
-        self.sound = None
+        self.sound = pygame.mixer.Sound("assets/sfx/coin.wav")
+        # self.sound = None
 
     def update(self, player):
         """Animate and detect collection."""
