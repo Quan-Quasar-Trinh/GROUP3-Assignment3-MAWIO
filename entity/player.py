@@ -52,6 +52,7 @@ class Player(Object):
         self.hit = False
         self.animation_count = 0
         self.last_shot_time = 0
+        self.coins = 0 # Coin count
         
         
         self.SPRITES = load_sprite_sheets(join("assets", "img", "player"), 32, 32, True)

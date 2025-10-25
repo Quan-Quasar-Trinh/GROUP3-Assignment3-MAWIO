@@ -1,14 +1,16 @@
 import pygame
 from entity.terrain import Terrain
+from entity.coin import Coin # Adding Coin
 
 TILE_SIZE = 64  # each block = 64x64 pixels
 
 
 class Level:
     """Base class for all levels."""
-    def __init__(self, level_id, spawn, map_size, terrain_matrix):
+    def __init__(self, level_id, spawn, map_size, terrain_matrix, coins=[]):
         self.level_id = level_id
         self.spawn = spawn
+        self.coins = coins
 
         # Add 1-block border around the terrain matrix
         self.terrain_matrix = self.add_border(terrain_matrix)
@@ -45,6 +47,11 @@ class Level:
                     y = row_index * TILE_SIZE
                     terrain_list.append(Terrain(x, y, TILE_SIZE))
         return terrain_list
+    
+    def print_coin(self):
+        for coin in self.coins:
+            coin.draw(screen, camera_x, camera_y)
+            coin.update(player)
 
 
 # ===========================================================
@@ -71,7 +78,8 @@ class Level1(Level):
             level_id=1,
             spawn=(100, 610),
             map_size=(5120, 704),
-            terrain_matrix=terrain_matrix
+            terrain_matrix=terrain_matrix,
+            coins=[Coin(400, 500), Coin(600, 500)]
         )
 
 
@@ -101,7 +109,8 @@ class Level2(Level):
             level_id=2,
             spawn=(150, 704 - 160),
             map_size=(5120, 704),
-            terrain_matrix=terrain_matrix
+            terrain_matrix=terrain_matrix,
+            coins=[Coin(1000, 300), Coin(1200, 300)]
         )
 
 
@@ -129,5 +138,6 @@ class Level3(Level):
             level_id=3,
             spawn=(100, 704 - 192),
             map_size=(1280, 720),
-            terrain_matrix=terrain_matrix
+            terrain_matrix=terrain_matrix,
+            coins=[Coin(200, 500), Coin(400, 500), Coin (290, 360), Coin (290, 160)]
         )

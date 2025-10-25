@@ -7,6 +7,7 @@ from level.level import Level1, Level2, Level3
 from entity.player import Player
 from entity.proj import Proj
 from entity.enemy import Enemy, MeleeEnemy
+from entity.coin import Coin # Add Coin
 
 FPS = 60
 
@@ -76,6 +77,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     
     
     tiles = load_level(level)
+    coins_spawn = tiles.coins
     player = Player(tiles.spawn[0], tiles.spawn[1], 50, 50)
     terrain_positions = tiles.get_terrain()
     camera_x = 0
@@ -186,11 +188,15 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                 spe_projs.remove(proj)
                 print("removed spe")
         handle_move(player, terrain_positions)
-
-        # --- Drawing ---
-        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies)
-
         
+        # --- Smooth the coin collecting action ---
+        for coin in tiles.coins[:]:
+            coin.update(player)
+            if coin.collected:
+                tiles.coins.remove(coin)
+        
+        # --- Drawing ---
+        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn)
 
         pygame.display.flip()
 

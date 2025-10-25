@@ -17,7 +17,7 @@ def get_background(name,WIDTH,HEIGHT):
 
     return tiles, image
 
-def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None, nor =[], spe = [] , Nor_enemies = [], Spe_enemies = []):
+def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None, nor =[], spe = [] , Nor_enemies = [], Spe_enemies = [], Coins = []):
     base_surface.blit(bg_surface, (0, 0))
 
     for block in floor:
@@ -112,6 +112,11 @@ def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BAS
     scaled_surface = pygame.transform.smoothscale(base_surface, (scaled_width, scaled_height))
     screen.fill((0, 0, 0))  # letterbox background
     screen.blit(scaled_surface, (offset_x, offset_y))
+    
+    # Adding Coins
+    for coin in Coins:
+        coin.draw(screen, camera_x, camera_y)
+        coin.update(player)
 
 def handle_vertical_collision(player, objects, dy):
     collided_objects = []
