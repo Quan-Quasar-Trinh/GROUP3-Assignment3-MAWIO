@@ -220,7 +220,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         for coin in coins_spawn[:]:
             coin.update(player)
             if coin.collected:
-                tiles.coins.remove(coin)
+                coins_spawn.remove(coin)
         if player.HP ==0:
             showGameOver(player)
             return "menu", WIDTH, HEIGHT, sound_volume, 1

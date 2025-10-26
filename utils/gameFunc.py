@@ -108,15 +108,45 @@ def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BAS
         scaled_height = int(WIDTH / target_ratio)
         offset_x = 0
         offset_y = (HEIGHT - scaled_height) // 2
+    if player:
 
-    scaled_surface = pygame.transform.smoothscale(base_surface, (scaled_width, scaled_height))
-    screen.fill((0, 0, 0))  # letterbox background
-    screen.blit(scaled_surface, (offset_x, offset_y))
+        hud_width  = int(BASE_WIDTH * 0.15)
+        hud_height = int(BASE_HEIGHT * 0.025)
+        hud_x      = int(BASE_WIDTH * 0.02)
+        hud_y      = int(BASE_HEIGHT * 0.07)  # moved lower
+        hud_font   = pygame.font.Font(None, int(BASE_HEIGHT * 0.03))
+
+
+        hud_bg = pygame.Surface((hud_width, hud_height * 3), pygame.SRCALPHA)  # allow transparency
+        hud_bg.fill((0, 0, 0, 150))  # semi-transparent black
+        base_surface.blit(hud_bg, (hud_x, hud_y-10))
+
+        # --- HP Bar ---
+        pygame.draw.rect(base_surface, (100, 100, 100), (hud_x + 5, hud_y + 5, hud_width - 10, hud_height))
+        hp_ratio = player.HP / player.maxHP
+        pygame.draw.rect(base_surface, (255, 0, 0), (hud_x + 5, hud_y + 5, int((hud_width - 10) * hp_ratio), hud_height))
+        hp_text = hud_font.render(f"HP: {player.HP}/{player.maxHP}", True, (255, 255, 255))
+        base_surface.blit(hp_text, (hud_x + 5, hud_y - hp_text.get_height() // 2))
+
+        # --- Coins ---
+        coin_text = hud_font.render(f"Coins: {player.coins}", True, (255, 255, 0))
+        base_surface.blit(coin_text, (hud_x + 5, hud_y + hud_height + 5))
+
+
+    
     
     # Adding Coins
     for coin in Coins:
-        coin.draw(screen, camera_x, camera_y)
+        coin.draw(base_surface, camera_x, camera_y)
         coin.update(player)
+    
+    
+    scaled_surface = pygame.transform.smoothscale(base_surface, (scaled_width, scaled_height))
+    screen.fill((0, 0, 0))  # letterbox background
+    screen.blit(scaled_surface, (offset_x, offset_y))
+       
+        
+    
 
 def handle_vertical_collision(player, objects, dy):
     collided_objects = []
