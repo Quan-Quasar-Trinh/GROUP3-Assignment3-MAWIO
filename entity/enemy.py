@@ -121,7 +121,8 @@ class BossBullet:
         half = size // 2
         self.rect = pygame.Rect(x - half, y - half, size, size)
         self.vx, self.vy = vx, vy
-
+        self.dmg = 10
+        self.destroyed = False
     def update(self):
         self.rect.x += self.vx
         self.rect.y += self.vy
@@ -135,21 +136,23 @@ class BossBullet:
 class Boss:
     def __init__(self, x, y, width, height):
         self.rect = pygame.Rect(x, y, width, height)
-        self.hp = self.max_hp = 100
+        self.hp = self.max_hp = 500
         self.phase = 1
+        
+        self.special = False
 
         # patrol on the right edge
         self.patrol_x = 1160
         self.center_y = 360
         self.amp = 260
-        self.freq = 0.5
-        self.freq2 = 1.0
+        self.freq = 0.1
+        self.freq2 = 0.15
 
         # shooting
         self.last_shot = 0
         self.shot_interval = 3000          # ms
         self.burst = 3
-        self.b_speed = 15.0                # 1.5× normal
+        self.b_speed = 5.0                # 1.5× normal
         self.b_size = 40                   # 2.5× normal
         self.shots_since_slam = 0
 
@@ -159,12 +162,13 @@ class Boss:
         self.last_t = 0
         self.appear_delay = 200
         self.track_time = 1000
-        self.stay1 = 1000
-        self.stay2 = 3000
+        self.stay1 = 2000
+        self.stay2 = 5000
         self.repeat = 0
         self.track_spd = 400.0
         self.fall_spd = 30.0
-        self.ground_y = 704 - height
+        self.ground_y = 704 
+        self.slam_DMG = 15
 
     # ------------------------------------------------------------------
     def update(self, now, player, boss_projs, terrain):
@@ -179,7 +183,10 @@ class Boss:
 
         sec = dt / 1000.0
         frame = dt / (1000 / 60)
-
+        if self.rect.colliderect(player.rect) and not player.Invin:
+            player.Invin = True
+            player.InvinTime = time.time()
+            player.HP -= self.slam_DMG
         # ---------- PATROL ----------
         if self.state == "patrol":
             t = now * 0.001
@@ -238,6 +245,7 @@ class Boss:
                     self.repeat = 0
                 else:
                     self._start_slam()
+        
 
     # ------------------------------------------------------------------
     def _start_slam(self):
@@ -252,7 +260,7 @@ class Boss:
         base = math.atan2(dy, dx)
         for i in range(self.burst):
             ang = base + (i - 1) * 0.15
-            vx = math.cos(ang) * self.b_speed
+            vx = math.cos(ang) * self.b_speed   
             vy = math.sin(ang) * self.b_speed
             projs.append(BossBullet(self.rect.centerx, self.rect.centery, vx, vy, self.b_size))
 

@@ -66,7 +66,7 @@ class Player(Object):
         self.vy += min(1, (self.fall_count / fps) * self.GRAVITY)
         self.move(self.vx, self.vy)
         self.fall_count += 1
-        if time.time()-self.InvinTime >=1:
+        if time.time()-self.InvinTime >=2:
             self.Invin = False
         
         self.update_sprite()

@@ -1,6 +1,6 @@
 import pygame
 import sys
-
+import time
 from utils.gameFunc import draw, get_background, handle_move, showGameOver
 from utils.button import Button
 from entity.terrain import Terrain
@@ -122,6 +122,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                     player.shoot(nor_projs, spe_projs, setting)
                 elif event.key == pygame.K_TAB or event.key == pygame.K_u:
                     setting = not setting
+                    
                 
                 #dev cheat
                 elif event.key == pygame.K_p:
@@ -132,6 +133,9 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                     else:
                         print("Reached final level, returning to menu...")
                         return "menu", WIDTH, HEIGHT, sound_volume, 1
+                elif event.key == pygame.K_b:
+                    if boss:
+                        boss.hp /=2
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pygame.mouse.get_pos()
@@ -193,17 +197,17 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
             for enemy in Nor_enemies:
                 enemy.update(nor_projs, spe_projs, setting, player)
             for proj in (nor_projs):
-                proj.update(terrain_positions, player, Nor_enemies, Spe_enemies)
+                proj.update(terrain_positions, player, Nor_enemies, Spe_enemies, boss)
                 if proj.destroyed == True:
                     nor_projs.remove(proj)
                     break
                 if proj.rect.x<-100 or proj.rect.x > tiles.map_size[0]:
                     nor_projs.remove(proj)
         for proj in (spe_projs):
-            proj.update(terrain_positions, player, Nor_enemies, Spe_enemies)
+            proj.update(terrain_positions, player, Nor_enemies, Spe_enemies, boss)
             if proj.destroyed == True:
-                    spe_projs.remove(proj)
-                    break
+                spe_projs.remove(proj)
+                break
             if proj.rect.x<-100 or proj.rect.x > tiles.map_size[0]:
                 spe_projs.remove(proj)
                 print("removed spe")
@@ -218,6 +222,16 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         for enemy in Spe_enemies:
             if enemy.HP ==0:
                 Spe_enemies.remove(enemy)
+        for proj in boss_proj:
+            proj.update()
+            if proj.rect.colliderect(player.rect) and not player.Invin:
+                player.Invin = True
+                player.InvinTime = time.time()
+                boss_proj.remove(proj)
+                player.HP -= proj.dmg
+                if player.HP<0:
+                    player.HP = 0
+        
         if boss:
             boss.update(pygame.time.get_ticks(), player, boss_proj, terrain_positions)
                 

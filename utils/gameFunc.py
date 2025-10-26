@@ -87,6 +87,21 @@ def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BAS
     # --- Scale and draw to actual screen (keep 16:9 ratio) ---
     if player:
         player.draw(base_surface, camera_x, camera_y)
+        # --- INVINCIBILITY BLINK BORDER ---
+        if getattr(player, "Invin", False):  # only draw if the player has Invin flag
+            import time
+            elapsed = time.time() - player.InvinTime if hasattr(player, "InvinTime") else 0
+            blink_speed = 10  # how fast it blinks
+            blink_on = int(elapsed * blink_speed) % 2 == 0  # toggle visibility
+            if blink_on:
+                border_color = (255, 255, 0)  # yellow border
+                border_rect = pygame.Rect(
+                    player.rect.x - camera_x - 3,
+                    player.rect.y - camera_y - 3,
+                    player.rect.width + 6,
+                    player.rect.height + 6
+                )
+                pygame.draw.rect(base_surface, border_color, border_rect, 3)
         if setting:
             pygame.draw.rect(base_surface, (255, 0, 0), (player.rect.x - camera_x, player.rect.y - camera_y, player.width, player.height), 2)
     for Enemy in Spe_enemies:
@@ -134,7 +149,8 @@ def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BAS
 
     if boss:
         boss.draw(base_surface, camera_x, camera_y, setting)
-
+    for proj in boss_proj:
+        proj.draw(base_surface, camera_x, camera_y)
     
     
     # Adding Coins

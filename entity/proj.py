@@ -27,7 +27,7 @@ class Proj:
         else:
             self.color = (180, 0, 255)      # Purple - enemy special
 
-    def update(self, objs, player, nor, spe):
+    def update(self, objs, player, nor, spe, boss):
         """Move projectile based on direction."""
         if self.direction_left:
             self.rect.x -= self.speed
@@ -53,7 +53,21 @@ class Proj:
                 if player.HP<0:
                     player.HP = 0
         else:
-            
+            if self.rect.colliderect(boss.rect):
+                self.destroyed = True
+                if ((not self.special) and (not boss.special) ) or (self.special and boss.special):
+                    boss.hp -=self.dmg
+                    if boss.hp <0:
+                        boss.hp =0
+                elif self.special and (not boss.special):
+                    boss.hp -=self.dmg/2
+                    if boss.hp <0:
+                        boss.hp =0
+                
+                
+                
+                
+                
             if self.special:
                 # Special bullet: full dmg to special, half dmg to normal
                 for enemy in spe:
