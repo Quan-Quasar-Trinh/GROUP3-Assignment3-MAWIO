@@ -54,6 +54,7 @@ class Player(Object):
         self.animation_count = 0
         self.last_shot_time = 0
         self.coins = 0 # Coin count
+        self.atk_speed = 1 # Update atk_speed
         
         
         self.SPRITES = load_sprite_sheets(join("assets", "img", "player"), 32, 32, True)
