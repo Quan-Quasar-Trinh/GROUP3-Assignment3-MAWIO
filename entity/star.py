@@ -13,10 +13,10 @@ class Star(Object):
         self.vy += self.gravity
         self.rect.y += self.vy
 
-        for block in floor:
-            if self.rect.colliderect(block.rect) and self.vy > 0:
-                self.rect.bottom = block.rect.top
-                self.vy = 0
+        # for block in floor:
+        #     if self.rect.colliderect(block.rect) and self.vy > 0:
+        #         self.rect.bottom = block.rect.top
+        #         self.vy = 0
 
     def draw(self, screen, camera_x, camera_y):
         screen.blit(self.image, (self.rect.x - camera_x, self.rect.y - camera_y))

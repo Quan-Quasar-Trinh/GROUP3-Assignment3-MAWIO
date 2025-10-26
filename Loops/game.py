@@ -9,6 +9,8 @@ from entity.player import Player
 from entity.proj import Proj
 from entity.enemy import Enemy, MeleeEnemy, RangeEnemy
 from entity.coin import Coin # Add Coin
+from entity.container import Container # Add Containers
+from entity.star import Star # Add Star
 
 FPS = 60
 
@@ -80,6 +82,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     
     tiles = load_level(level)    
     coins_spawn = tiles.coins
+    cont_spawn = tiles.containers
     for coin in coins_spawn:
         coin.adj_vol(sound_volume)
     player = Player(tiles.spawn[0], tiles.spawn[1], 50, 50)
@@ -208,6 +211,10 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                 spe_projs.remove(proj)
                 print("removed spe")
 
+        # handle_move(player, terrain_positions)
+        
+        # Adding hitting container
+        hit = terrain_positions + cont_spawn
         handle_move(player, terrain_positions)
         
         for enemy in Spe_enemies:
@@ -232,7 +239,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
             return "menu", WIDTH, HEIGHT, sound_volume, 1
         
         # --- Drawing ---
-        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn, boss, boss_proj)
+        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn, boss, boss_proj, cont_spawn)
 
         pygame.display.flip()
 

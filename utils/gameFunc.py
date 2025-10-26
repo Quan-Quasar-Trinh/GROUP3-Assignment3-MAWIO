@@ -17,7 +17,7 @@ def get_background(name,WIDTH,HEIGHT):
 
     return tiles, image
 
-def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None, nor =[], spe = [] , Nor_enemies = [], Spe_enemies = [], Coins = [], boss = None, boss_proj = []):
+def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None, nor =[], spe = [] , Nor_enemies = [], Spe_enemies = [], Coins = [], boss = None, boss_proj = [], Containers = []):
     base_surface.blit(bg_surface, (0, 0))
 
     for block in floor:
@@ -141,6 +141,11 @@ def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BAS
     for coin in Coins:
         coin.draw(base_surface, camera_x, camera_y)
         coin.update(player)
+        
+    # Adding container
+    for container in Containers:
+        container.draw(base_surface, camera_x, camera_y)
+        container.update(player)
     
     
     scaled_surface = pygame.transform.smoothscale(base_surface, (scaled_width, scaled_height))
@@ -160,6 +165,8 @@ def handle_vertical_collision(player, objects, dy):
             elif dy < 0:
                 player.rect.top = obj.rect.bottom
                 player.hit_head()
+                if hasattr(obj, "hit_from_below"):
+                    obj.hit_from_below(player)
 
             collided_objects.append(obj)
     return collided_objects
