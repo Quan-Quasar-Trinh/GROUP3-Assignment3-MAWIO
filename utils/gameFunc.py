@@ -17,7 +17,7 @@ def get_background(name,WIDTH,HEIGHT):
 
     return tiles, image
 
-def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None, nor =[], spe = [] , Nor_enemies = [], Spe_enemies = [], Coins = []):
+def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None, nor =[], spe = [] , Nor_enemies = [], Spe_enemies = [], Coins = [], boss = None, boss_proj = []):
     base_surface.blit(bg_surface, (0, 0))
 
     for block in floor:
@@ -132,6 +132,8 @@ def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BAS
         coin_text = hud_font.render(f"Coins: {player.coins}", True, (255, 255, 0))
         base_surface.blit(coin_text, (hud_x + 5, hud_y + hud_height + 5))
 
+    if boss:
+        boss.draw(base_surface, camera_x, camera_y, setting)
 
     
     

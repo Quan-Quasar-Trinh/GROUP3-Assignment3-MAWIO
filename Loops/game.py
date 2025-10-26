@@ -1,5 +1,6 @@
 import pygame
 import sys
+
 from utils.gameFunc import draw, get_background, handle_move, showGameOver
 from utils.button import Button
 from entity.terrain import Terrain
@@ -48,7 +49,8 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     # --- Font ---
     font_size = int(BASE_WIDTH * 0.04)
     font = pygame.font.Font(None, font_size)
-
+    clock = pygame.time.Clock()
+    
     # --- Settings buttons ---
     def make_settings_buttons():
         return (
@@ -88,10 +90,12 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     
     Nor_enemies = tiles.get_nor_enemies()
     Spe_enemies = tiles.get_spe_enemies()
-    
+    boss = tiles.get_boss()
 
     nor_projs = []
     spe_projs = []
+    boss_proj = []
+    
     
     running = True
     while running:
@@ -214,6 +218,8 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         for enemy in Spe_enemies:
             if enemy.HP ==0:
                 Spe_enemies.remove(enemy)
+        if boss:
+            boss.update(pygame.time.get_ticks(), player, boss_proj, terrain_positions)
                 
         
         # --- Smooth the coin collecting action ---
@@ -226,7 +232,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
             return "menu", WIDTH, HEIGHT, sound_volume, 1
         
         # --- Drawing ---
-        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn)
+        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn, boss, boss_proj)
 
         pygame.display.flip()
 

@@ -1,7 +1,7 @@
 import pygame
 from entity.terrain import Terrain
 from entity.coin import Coin # Adding Coin
-from entity.enemy import MeleeEnemy, RangeEnemy
+from entity.enemy import MeleeEnemy, RangeEnemy, Boss
 
 TILE_SIZE = 64  # each block = 64x64 pixels
 
@@ -22,7 +22,7 @@ class Level:
             len(self.terrain_matrix[0]) * TILE_SIZE,  # width
             len(self.terrain_matrix) * TILE_SIZE      # height
         )
-
+        self.boss = None
     def add_border(self, matrix):
         """Add a 1-block thick border around the map."""
         if not matrix:
@@ -57,7 +57,8 @@ class Level:
         for coin in self.coins:
             coin.draw(screen, camera_x, camera_y)
             coin.update(player)
-
+    def get_boss(self):
+        return self.boss
 
 # ===========================================================
 #                        LEVEL 1
@@ -87,6 +88,7 @@ class Level1(Level):
             coins=[Coin(400, 500, 100), Coin(600, 500, 100)]
         )
         self.Enemies = []
+
 
 
 # ===========================================================
@@ -139,7 +141,7 @@ class Level2(Level):
         self.Enemies.append(MeleeEnemy(62 * 64+90, 576, 40, 40, special=False))   # normal after pit 3
         self.Enemies.append(MeleeEnemy(62 * 64, 576, 40, 40, special=True)) 
 
-
+    
 # ===========================================================
 #                        LEVEL 3
 # ===========================================================
@@ -167,3 +169,4 @@ class Level3(Level):
             terrain_matrix=terrain_matrix,
             coins=[Coin(200, 500, 100), Coin(400, 500, 100), Coin (290, 360, 100), Coin (290, 160, 100)]
         )
+        self.boss = Boss(1100, 64, 240,240)
