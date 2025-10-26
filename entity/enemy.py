@@ -8,6 +8,7 @@ from entity.proj import Proj
 class Enemy(Object):
     def __init__(self, x, y, width, height,special = False, HP = 100, name = "Melee"):
         super().__init__(x, y, width, height, name)
+        self.maxHP = HP
         self.HP = HP
         self.special = special
         self.dir_left = True
@@ -54,6 +55,15 @@ class Enemy(Object):
             pygame.draw.rect(screen, (128, 128, 128), (draw_x, draw_y, self.width, self.height))
             if self.special and setting:
                 pygame.draw.rect(screen, highlight_color, (draw_x, draw_y, self.width, self.height), 3)
+        hp_ratio = max(self.HP / self.maxHP, 0)
+        bar_width = self.width
+        bar_height = 6
+        bar_x = draw_x
+        bar_y = draw_y - 12
+        # Background bar (gray)
+        pygame.draw.rect(screen, (60, 60, 60), (bar_x, bar_y, bar_width, bar_height))
+        # HP portion (green to red)
+        pygame.draw.rect(screen, (255 * (1 - hp_ratio), 255 * hp_ratio, 0), (bar_x, bar_y, bar_width * hp_ratio, bar_height))
         # If special, draw a glowing barrier around it
         if self.special and setting == False:
             # Calculate center and radius for barrier

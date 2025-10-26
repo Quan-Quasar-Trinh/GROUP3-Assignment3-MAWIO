@@ -88,10 +88,10 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     
     Nor_enemies = []
     Spe_enemies = []
-    Nor_enemies.append(MeleeEnemy(200, 200, 32, 32, False))
-    Nor_enemies.append(RangeEnemy(300, 200, 32, 32,False))
-    Spe_enemies.append(MeleeEnemy(200, 300, 32, 32, True))
-    Spe_enemies.append(RangeEnemy(300, 300, 32, 32,True))
+    Nor_enemies.append(MeleeEnemy(200, 600, 32, 32, False))
+    Nor_enemies.append(RangeEnemy(300, 600, 32, 32,False))
+    Spe_enemies.append(MeleeEnemy(200, 500, 32, 32, True))
+    Spe_enemies.append(RangeEnemy(300, 500, 32, 32,True))
 
     nor_projs = []
     spe_projs = []
@@ -206,10 +206,17 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
             if proj.rect.x<-100 or proj.rect.x > tiles.map_size[0]:
                 spe_projs.remove(proj)
                 print("removed spe")
+
         handle_move(player, terrain_positions)
         
         for enemy in Spe_enemies:
             enemy.update(nor_projs, spe_projs, setting)
+        for enemy in Nor_enemies:
+            if enemy.HP ==0:
+                Nor_enemies.remove(enemy)
+        for enemy in Spe_enemies:
+            if enemy.HP ==0:
+                Spe_enemies.remove(enemy)
         
         # --- Smooth the coin collecting action ---
         for coin in coins_spawn[:]:

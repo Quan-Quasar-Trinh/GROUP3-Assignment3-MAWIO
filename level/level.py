@@ -12,6 +12,7 @@ class Level:
         self.level_id = level_id
         self.spawn = spawn
         self.coins = coins
+        self.Enemies = []
 
         # Add 1-block border around the terrain matrix
         self.terrain_matrix = self.add_border(terrain_matrix)
@@ -48,6 +49,8 @@ class Level:
                     y = row_index * TILE_SIZE
                     terrain_list.append(Terrain(x, y, TILE_SIZE))
         return terrain_list
+    def get_enemies(self):
+        return self.Enemies
     
     def print_coin(self):
         for coin in self.coins:
@@ -82,6 +85,7 @@ class Level1(Level):
             terrain_matrix=terrain_matrix,
             coins=[Coin(400, 500, 100), Coin(600, 500, 100)]
         )
+        self.Enemies = []
 
 
 # ===========================================================
@@ -113,6 +117,7 @@ class Level2(Level):
             terrain_matrix=terrain_matrix,
             coins=[Coin(950, 300, 100), Coin(1150, 300, 100)]
         )
+        self.Enemies = []
 
 
 # ===========================================================

@@ -51,9 +51,38 @@ class Proj:
                 if player.HP<0:
                     player.HP = 0
         else:
-            pass
-        
-        
+            
+            if self.special:
+                # Special bullet: full dmg to special, half dmg to normal
+                for enemy in spe:
+                    if self.rect.colliderect(enemy.rect) and not self.destroyed:
+                        enemy.HP -= self.dmg
+                        if enemy.HP < 0:
+                            enemy.HP = 0
+                        self.destroyed = True
+
+                for enemy in nor:
+                    if self.rect.colliderect(enemy.rect) and not self.destroyed:
+                        # hit but half damage
+                        enemy.HP -= self.dmg / 2
+                        if enemy.HP < 0:
+                            enemy.HP = 0
+                        self.destroyed = True
+
+            else:
+                # Normal bullet: full dmg to normal, 0 dmg to special (but still collides)
+                for enemy in nor:
+                    if self.rect.colliderect(enemy.rect) and not self.destroyed:
+                        enemy.HP -= self.dmg
+                        if enemy.HP < 0:
+                            enemy.HP = 0
+                        self.destroyed = True
+
+                for enemy in spe:
+                    if self.rect.colliderect(enemy.rect) and not self.destroyed:
+                        # Collides but deals no damage
+                        self.destroyed = True
+                
 
     def draw(self, surface, offsetX, offsetY):
         """Draw projectile as a thin rectangle."""
