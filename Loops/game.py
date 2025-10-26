@@ -80,6 +80,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     
     tiles = load_level(level)    
     coins_spawn = tiles.coins
+    cont_spawn = tiles.containers
     for coin in coins_spawn:
         coin.adj_vol(sound_volume)
     player = Player(tiles.spawn[0], tiles.spawn[1], 50, 50)
@@ -119,7 +120,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                 elif event.key == pygame.K_SPACE and player.jump_count < 2:
                     player.jump()
                 elif event.key == pygame.K_h:
-                    player.shoot(nor_projs, spe_projs, setting)
+                    player.shoot(nor_projs, spe_projs, setting, sound_volume)
                 elif event.key == pygame.K_TAB or event.key == pygame.K_u:
                     setting = not setting
                     
@@ -195,16 +196,16 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         player.loop(FPS)
         if not setting:
             for enemy in Nor_enemies:
-                enemy.update(nor_projs, spe_projs, setting, player)
+                enemy.update(nor_projs, spe_projs, setting, player, sound_volume)
             for proj in (nor_projs):
-                proj.update(terrain_positions, player, Nor_enemies, Spe_enemies, boss)
+                proj.update(terrain_positions, player, Nor_enemies, Spe_enemies, boss, sound_volume)
                 if proj.destroyed == True:
                     nor_projs.remove(proj)
                     break
                 if proj.rect.x<-100 or proj.rect.x > tiles.map_size[0]:
                     nor_projs.remove(proj)
         for proj in (spe_projs):
-            proj.update(terrain_positions, player, Nor_enemies, Spe_enemies, boss)
+            proj.update(terrain_positions, player, Nor_enemies, Spe_enemies, boss, sound_volume)
             if proj.destroyed == True:
                 spe_projs.remove(proj)
                 break
@@ -212,10 +213,16 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                 spe_projs.remove(proj)
                 print("removed spe")
 
-        handle_move(player, terrain_positions)
+        #handle_move(player, terrain_positions)
+        
+        # Adding hitting container
+        hit = terrain_positions + [c for c in cont_spawn if not c.used]
+        handle_move(player, hit)
+        
+        
         
         for enemy in Spe_enemies:
-            enemy.update(nor_projs, spe_projs, setting, player)
+            enemy.update(nor_projs, spe_projs, setting, player, sound_volume)
         for enemy in Nor_enemies:
             if enemy.HP ==0:
                 Nor_enemies.remove(enemy)
@@ -246,7 +253,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
             return "menu", WIDTH, HEIGHT, sound_volume, 1
         
         # --- Drawing ---
-        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn, boss, boss_proj)
+        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn, boss, boss_proj, cont_spawn)
 
         pygame.display.flip()
 

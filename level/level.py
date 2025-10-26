@@ -2,17 +2,19 @@ import pygame
 from entity.terrain import Terrain
 from entity.coin import Coin # Adding Coin
 from entity.enemy import MeleeEnemy, RangeEnemy, Boss
+from entity.container import Container
 
 TILE_SIZE = 64  # each block = 64x64 pixels
 
 
 class Level:
     """Base class for all levels."""
-    def __init__(self, level_id, spawn, map_size, terrain_matrix, coins=[]):
+    def __init__(self, level_id, spawn, map_size, terrain_matrix, coins=[], containers = []):
         self.level_id = level_id
         self.spawn = spawn
         self.coins = coins
         self.Enemies = []
+        self.containers = containers
 
         # Add 1-block border around the terrain matrix
         self.terrain_matrix = self.add_border(terrain_matrix)
@@ -85,7 +87,8 @@ class Level1(Level):
             spawn=(100, 610),
             map_size=(5120, 704),
             terrain_matrix=terrain_matrix,
-            coins=[Coin(400, 500, 100), Coin(600, 500, 100)]
+            coins=[Coin(400, 500, 100), Coin(600, 500, 100)],
+            containers=[Container(1000, 500, 100)]
         )
         self.Enemies = []
 

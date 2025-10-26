@@ -6,6 +6,8 @@ import math
 from entity.obj import Object
 from entity.proj import Proj
 
+from os.path import join
+
 class Enemy(Object):
     def __init__(self, x, y, width, height,special = False, HP = 100, name = "Melee"):
         super().__init__(x, y, width, height, name)
@@ -79,7 +81,7 @@ class MeleeEnemy(Enemy):
     def __init__(self, x, y, width, height, special = False):
         super().__init__(x, y, width, height,special, 100,  "Melee") 
         self.speed = 2
-    def update(self, nor, spe, setting, player):
+    def update(self, nor, spe, setting, player, sound):
         if not self.special and setting:
             return
         if abs(self.rect.x - self.baseX) >=150:
@@ -100,7 +102,7 @@ class RangeEnemy(Enemy):
         self.last_shot_time = time.time()  # thời điểm lần bắn cuối
         self.shootCD = RangeEnemy.RangeShootCD
         self.dir_left = dir_Left
-    def update(self, nor, spe, setting, player):
+    def update(self, nor, spe, setting, player, sound):
         """Không di chuyển, chỉ bắn mỗi 1 giây."""
         current_time = time.time()
         proj_x = self.rect.centerx
@@ -112,6 +114,10 @@ class RangeEnemy(Enemy):
                     nor.append(Proj(proj_x, proj_y, False, False, proj_dir))
             else:
                 spe.append(Proj(proj_x, proj_y, False, True, proj_dir))
+            if abs(self.rect.x-player.rect.x) <=640:
+                shoot_sound = pygame.mixer.Sound(join("assets", "sfx", "shoot.mp3"))
+                shoot_sound.set_volume(sound/400)  # adjust between 0.0–1.0
+                shoot_sound.play()
             self.last_shot_time = current_time
         
         
