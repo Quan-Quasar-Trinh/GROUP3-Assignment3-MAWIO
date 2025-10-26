@@ -177,7 +177,7 @@ class Boss:
         self.slam_DMG = 15
 
     # ------------------------------------------------------------------
-    def update(self, now, player, boss_projs, terrain):
+    def update(self, now, player, boss_projs, terrain, sound):
         dt = now - self.last_t
         self.last_t = now
 
@@ -193,6 +193,8 @@ class Boss:
             player.Invin = True
             player.InvinTime = time.time()
             player.HP -= self.slam_DMG
+            if player.HP<0:
+                player.HP =0
         # ---------- PATROL ----------
         if self.state == "patrol":
             t = now * 0.001
@@ -201,7 +203,7 @@ class Boss:
             self.rect.centerx = self.patrol_x
 
             if now - self.last_shot >= self.shot_interval:
-                self._burst(player, boss_projs)
+                self._burst(player, boss_projs, sound)
                 self.last_shot = now
                 self.shots_since_slam += 1
                 if self.phase == 2 and self.shots_since_slam >= 2:
@@ -239,8 +241,12 @@ class Boss:
                 self.rect.bottom = self.ground_y
                 stay = self.stay1 if self.repeat == 1 else self.stay2
                 self.state = "slam_stay"
+                slam_sound = pygame.mixer.Sound(join("assets", "sfx", "impact.mp3"))
+                slam_sound.set_volume(sound / 100)
+                slam_sound.play()
                 self.state_t = stay
                 self.repeat += 1
+            
 
         # ---------- SLAM STAY ----------
         elif self.state == "slam_stay":
@@ -259,7 +265,7 @@ class Boss:
         self.state_t = self.appear_delay
         self.repeat = 1
 
-    def _burst(self, player, projs):
+    def _burst(self, player, projs, sound):
         dx = player.rect.centerx - self.rect.centerx
         dy = player.rect.centery - self.rect.centery
         dist = math.hypot(dx, dy) or 1
@@ -268,6 +274,9 @@ class Boss:
             ang = base + (i - 1) * 0.15
             vx = math.cos(ang) * self.b_speed   
             vy = math.sin(ang) * self.b_speed
+            shoot_sound = pygame.mixer.Sound(join("assets", "sfx", "fireball.mp3"))
+            shoot_sound.set_volume(sound/100)  # adjust between 0.0–1.0
+            shoot_sound.play()
             projs.append(BossBullet(self.rect.centerx, self.rect.centery, vx, vy, self.b_size))
 
     # ------------------------------------------------------------------

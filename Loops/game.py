@@ -256,7 +256,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1, coins = 0):
                     player.HP = 0
         
         if boss:
-            boss.update(pygame.time.get_ticks(), player, boss_proj, terrain_positions)
+            boss.update(pygame.time.get_ticks(), player, boss_proj, terrain_positions, sound_volume)
             if boss.hp ==0:
                 portal = Portal(1100, 512, 64, 96)
                 boss = None
