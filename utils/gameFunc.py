@@ -17,7 +17,7 @@ def get_background(name,WIDTH,HEIGHT):
 
     return tiles, image
 
-def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None, nor =[], spe = [] , Nor_enemies = [], Spe_enemies = [], Coins = [], boss = None, boss_proj = [], containers = [], portal = None):
+def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, floor, camera_x=0, camera_y=0, player=None, nor =[], spe = [] , Nor_enemies = [], Spe_enemies = [], Coins = [], boss = None, boss_proj = [], containers = [], portal = None, coin = 0):
     base_surface.blit(bg_surface, (0, 0))
 
     for block in floor:
@@ -145,7 +145,7 @@ def draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BAS
         base_surface.blit(hp_text, (hud_x + 5, hud_y - hp_text.get_height() // 2))
 
         # --- Coins ---
-        coin_text = hud_font.render(f"Coins: {player.coins}", True, (255, 255, 0))
+        coin_text = hud_font.render(f"Coins: {coin}", True, (255, 255, 0))
         base_surface.blit(coin_text, (hud_x + 5, hud_y + hud_height + 5))
 
     if boss:
@@ -214,5 +214,64 @@ def handle_move(player, objects):
     vertical_collide = handle_vertical_collision(player, objects, player.vy)
     to_check = [collide_left, collide_right, *vertical_collide]
     
-def showGameOver(player):
-    pass
+def showGameOver(WIDTH, HEIGHT, level_reached, coins):
+    pygame.init()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Game Over")
+
+    # === Load background image ===
+    bg_path = join("assets", "img", "BG", "menu_bg.png")
+    try:
+        bg = pygame.image.load(bg_path).convert()
+        bg = pygame.transform.scale(bg, (WIDTH, HEIGHT))
+    except:
+        bg = None  # fallback if missing file
+
+    # === Fonts ===
+    font_big = pygame.font.Font(None, 100)
+    font_small = pygame.font.Font(None, 50)
+
+    # === Text colors (darker theme) ===
+    dark_red = (120, 0, 0)
+    dark_gray = (40, 40, 40)
+    dark_gold = (100, 80, 0)
+    dark_silver = (80, 80, 80)
+
+    # === Texts ===
+    game_over_text = font_big.render("GAME OVER", True, dark_red)
+    level_text = font_small.render(f"Level Reached: {level_reached}", True, dark_gray)
+    coin_text = font_small.render(f"Coins Collected: {coins}", True, dark_gold)
+    info_text = font_small.render("Press any key to exit", True, dark_silver)
+
+    # === Centering text ===
+    game_over_rect = game_over_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 100))
+    level_rect = level_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    coin_rect = coin_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 60))
+    info_rect = info_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 150))
+
+    clock = pygame.time.Clock()
+
+    # === Loop ===
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                pygame.quit()
+                return
+
+        # === Draw background ===
+        if bg:
+            screen.blit(bg, (0, 0))
+        else:
+            screen.fill((20, 20, 20))
+
+        # === Draw text ===
+        screen.blit(game_over_text, game_over_rect)
+        screen.blit(level_text, level_rect)
+        screen.blit(coin_text, coin_rect)
+        screen.blit(info_text, info_rect)
+
+        pygame.display.flip()
+        clock.tick(60)

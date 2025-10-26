@@ -89,8 +89,22 @@ class Level1(Level):
             spawn=(100, 610),
             map_size=(5120, 704),
             terrain_matrix=terrain_matrix,
-            coins=[Coin(400, 500, 100), Coin(600, 500, 100)],
-            containers=[Container(1000, 500, 100)]
+            coins = [
+    Coin(400, 500, 100),
+    Coin(600, 500, 100),
+    Coin(900, 420, 100),
+    Coin(1200, 420, 100),
+    Coin(1600, 500, 100),
+    Coin(1900, 500, 100),
+    Coin(2500, 500, 100),
+    Coin(2800, 500, 100)
+],
+
+containers = [
+    Container(1000, 500, 100),
+    Container(2200, 500, 100)
+]
+
         )
         self.Enemies = []
         self.portal = Portal(5000, 576, 64, 96)
@@ -129,7 +143,21 @@ class Level2(Level):
             spawn=(150, 704 - 160),
             map_size=(5120, 704),
             terrain_matrix=terrain_matrix,
-            coins=[Coin(950, 300, 100), Coin(1150, 300, 100)]
+            coins = [
+    Coin(750, 300, 100),
+    Coin(1150, 300, 100),
+    Coin(1800, 500, 100),
+    Coin(2600, 420, 100),
+    Coin(3400, 320, 100),
+    Coin(4200, 500, 100),
+    Coin(4800, 420, 100)
+],
+
+containers = [
+    Container(1000, 300, 100),
+    Container(3600, 320, 100)
+]
+
         )
         self.Enemies = []
         self.Enemies.append(RangeEnemy( 61*64+24,384 ,40, 40, special=True, dir_Left=True))
@@ -176,7 +204,19 @@ class Level3(Level):
             spawn=(100, 704 - 192),
             map_size=(1280, 720),
             terrain_matrix=terrain_matrix,
-            coins=[Coin(200, 500, 100), Coin(400, 500, 100), Coin (290, 360, 100), Coin (290, 160, 100)]
+            coins=[
+    Coin(200, 450, 100),
+    Coin(400, 450, 100),
+    Coin(280, 320, 100),
+    Coin(250, 160, 100),
+    Coin(700, 500, 100),
+    Coin(900, 500, 100),
+    Coin(1100, 300, 100),
+],
+containers=[
+    Container(600, 496, 100),
+]
+
         )
         self.boss = Boss(1100, 64, 240,240)
         self.portal = None

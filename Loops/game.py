@@ -12,7 +12,7 @@ from entity.coin import Coin # Add Coin
 from entity.portal import Portal
 FPS = 60
 
-def game(WIDTH, HEIGHT, sound_volume, level=1):
+def game(WIDTH, HEIGHT, sound_volume, level=1, coins = 0):
     
     pygame.init()
     pygame.display.set_caption("MAWIO")
@@ -126,7 +126,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                     if setting:
                         setting = False
                     else:
-                        return "menu", WIDTH, HEIGHT, sound_volume, 1
+                        return "menu", WIDTH, HEIGHT, sound_volume, 1, coins
                 
                 elif event.key == pygame.K_SPACE and player.jump_count < 2:
                     player.jump()
@@ -142,11 +142,11 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                         level += 1
                         print(f"Level increased to {level}")
                         pygame.mixer.music.stop()
-                        return "game", WIDTH, HEIGHT, sound_volume, level
+                        return "game", WIDTH, HEIGHT, sound_volume, level, coins
                     else:
                         print("Reached final level, returning to menu...")
                         pygame.mixer.music.stop()
-                        return "menu", WIDTH, HEIGHT, sound_volume, 1
+                        return "menu", WIDTH, HEIGHT, sound_volume, 1, coins
                 elif event.key == pygame.K_b:
                     if boss:
                         boss.hp /=2
@@ -166,7 +166,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                     if back_button.is_clicked(adj_mouse):
                         setting = False
                     elif menu_button.is_clicked(adj_mouse):
-                        return "menu", WIDTH, HEIGHT, sound_volume, 1
+                        return "menu", WIDTH, HEIGHT, sound_volume, 1, coins
                     elif res_button.is_clicked(adj_mouse):
                         current_res_index = (current_res_index + 1) % len(resolutions)
                         WIDTH, HEIGHT = resolutions[current_res_index]
@@ -265,24 +265,24 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         for coin in coins_spawn[:]:
             coin.update(player)
             if coin.collected:
+                coins+=1
                 coins_spawn.remove(coin)
         if player.HP ==0:
-            showGameOver(player)
-            return "menu", WIDTH, HEIGHT, sound_volume, 1
+            showGameOver(WIDTH, HEIGHT, tiles.level_id, coins)
+            return "menu", WIDTH, HEIGHT, sound_volume, 1, 0
         if portal:
             if player.rect.colliderect(portal.rect):
                 if level < 3:
                     level += 1
                     print(f"Level increased to {level}")
                     pygame.mixer.music.stop()
-                    return "game", WIDTH, HEIGHT, sound_volume, level
+                    return "game", WIDTH, HEIGHT, sound_volume, level, coins
                 else:
-                    print("Reached final level, returning to menu...")
-                    pygame.mixer.music.stop()
-                    return "menu", WIDTH, HEIGHT, sound_volume, 1
+                    showGameOver(WIDTH, HEIGHT, tiles.level_id, coins)
+                    return "menu", WIDTH, HEIGHT, sound_volume, 1, 0
         
         # --- Drawing ---
-        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn, boss, boss_proj, cont_spawn, portal)
+        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn, boss, boss_proj, cont_spawn, portal, coins)
 
         pygame.display.flip()
 
