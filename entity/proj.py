@@ -1,9 +1,9 @@
 import pygame
 
 class Proj:
-    def __init__(self, x, y, ally, special, direction):
-        self.x = x
-        self.y = y
+    def __init__(self, x, y, ally, special, direction, dmg = 10):
+        self.rect = pygame.Rect(x,y,20,4)
+        self.destroyed = False
         self.ally = ally
         self.special = special
         if direction == "left":
@@ -12,10 +12,11 @@ class Proj:
             self.direction_left = False
         
         
-        self.width = 20
-        self.height = 4
+        
         self.speed = 10
 
+        self.dmg = dmg
+        
         # --- Assign color once ---
         if self.ally and not self.special:
             self.color = (0, 128, 255)      # Blue - ally normal
@@ -26,20 +27,40 @@ class Proj:
         else:
             self.color = (180, 0, 255)      # Purple - enemy special
 
-    def update(self):
+    def update(self, objs, player, nor, spe):
         """Move projectile based on direction."""
         if self.direction_left:
-            self.x -= self.speed
+            self.rect.x -= self.speed
         else:
-            self.x += self.speed
+            self.rect.x += self.speed
+        #Collision to wall
+        for terrain in objs:
+            if self.rect.colliderect(terrain.rect):
+                self.destroyed = True
+                if self.special:
+                    print("removed spe(Wall)")
+                else:
+                    print("remove Nor(Wall)")
+                return
+            
+        #Collision to Player/Enemy
+        if not self.ally:
+            if self.rect.colliderect(player.rect):
+                self.destroyed = True
+                player.HP -= self.dmg
+                if player.HP<0:
+                    player.HP = 0
+        else:
+            pass
+        
         
 
     def draw(self, surface, offsetX, offsetY):
         """Draw projectile as a thin rectangle."""
         rect = pygame.Rect(
-            int(self.x - offsetX),
-            int(self.y - offsetY),
-            self.width,
-            self.height
+            int(self.rect.x - offsetX),
+            int(self.rect.y - offsetY),
+            self.rect.width,
+            self.rect.height
         )
         pygame.draw.rect(surface, self.color, rect)

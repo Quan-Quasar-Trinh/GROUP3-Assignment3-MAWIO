@@ -6,7 +6,7 @@ from entity.terrain import Terrain
 from level.level import Level1, Level2, Level3
 from entity.player import Player
 from entity.proj import Proj
-from entity.enemy import Enemy, MeleeEnemy
+from entity.enemy import Enemy, MeleeEnemy, RangeEnemy
 from entity.coin import Coin # Add Coin
 
 FPS = 60
@@ -89,9 +89,9 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     Nor_enemies = []
     Spe_enemies = []
     Nor_enemies.append(MeleeEnemy(200, 200, 32, 32, False))
-    Nor_enemies.append(Enemy(300, 200, 32, 32,False , 100, "Range"))
+    Nor_enemies.append(RangeEnemy(300, 200, 32, 32,False))
     Spe_enemies.append(MeleeEnemy(200, 300, 32, 32, True))
-    Spe_enemies.append(Enemy(300, 300, 32, 32,True , 100, "Range"))
+    Spe_enemies.append(RangeEnemy(300, 300, 32, 32,True))
 
     nor_projs = []
     spe_projs = []
@@ -188,17 +188,28 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
 
         
         player.loop(FPS)
-        for proj in (nor_projs):
-            proj.update()
-            if proj.x<-100 or proj.x > tiles.map_size[0]:
-                nor_projs.remove(proj)
-                print("removed nor")
+        if not setting:
+            for enemy in Nor_enemies:
+                enemy.update(nor_projs, spe_projs, setting)
+            for proj in (nor_projs):
+                proj.update(terrain_positions, player, Nor_enemies, Spe_enemies)
+                if proj.destroyed == True:
+                    nor_projs.remove(proj)
+                    break
+                if proj.rect.x<-100 or proj.rect.x > tiles.map_size[0]:
+                    nor_projs.remove(proj)
         for proj in (spe_projs):
-            proj.update()
-            if proj.x<-100 or proj.x > tiles.map_size[0]:
+            proj.update(terrain_positions, player, Nor_enemies, Spe_enemies)
+            if proj.destroyed == True:
+                    spe_projs.remove(proj)
+                    break
+            if proj.rect.x<-100 or proj.rect.x > tiles.map_size[0]:
                 spe_projs.remove(proj)
                 print("removed spe")
         handle_move(player, terrain_positions)
+        
+        for enemy in Spe_enemies:
+            enemy.update(nor_projs, spe_projs, setting)
         
         # --- Smooth the coin collecting action ---
         for coin in coins_spawn[:]:

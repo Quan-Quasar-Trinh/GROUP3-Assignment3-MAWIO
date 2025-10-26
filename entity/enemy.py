@@ -1,7 +1,9 @@
 import pygame
 import sys
 import os
+import time
 from entity.obj import Object
+from entity.proj import Proj
 
 class Enemy(Object):
     def __init__(self, x, y, width, height,special = False, HP = 100, name = "Melee"):
@@ -9,6 +11,10 @@ class Enemy(Object):
         self.HP = HP
         self.special = special
         self.dir_left = True
+        
+        self.baseX = x
+        self.baseY = y
+        
     def draw(self, screen, offset_x, offset_y, setting):
         # Calculate position with camera offset
         draw_x = self.rect.x - offset_x
@@ -57,9 +63,42 @@ class Enemy(Object):
             barrier_color = (200, 0, 255)  # bright magenta
             pygame.draw.circle(screen, barrier_color, (center_x, center_y), radius, 3)
             
+
 class MeleeEnemy(Enemy):
     def __init__(self, x, y, width, height, special = False):
         super().__init__(x, y, width, height,special, 100,  "Melee") 
+        self.speed = 2
+    def update(self, nor, spe, setting):
+        if not self.special and setting:
+            return
+        if abs(self.rect.x - self.baseX) >=150:
+            self.dir_left = not self.dir_left
+        if self.dir_left:
+            self.rect.x -= self.speed
+        else:
+            self.rect.x +=self.speed
+            
+class RangeEnemy(Enemy):
+    RangeShootCD = 1.0 #one sec
+    def __init__(self, x, y, width, height, special = False, dir_Left = True):
+        super().__init__(x, y, width, height,special, 50,  "Range") 
+        self.last_shot_time = time.time()  # thời điểm lần bắn cuối
+        self.shootCD = RangeEnemy.RangeShootCD
+        self.dir_left = dir_Left
+    def update(self, nor, spe, setting):
+        """Không di chuyển, chỉ bắn mỗi 1 giây."""
+        current_time = time.time()
+        proj_x = self.rect.centerx
+        proj_y = self.rect.centery
+        proj_dir = ("left" if self.dir_left else "right")
+        if current_time - self.last_shot_time >= self.shootCD:
+            if not self.special:
+                if not setting:
+                    nor.append(Proj(proj_x, proj_y, False, False, proj_dir))
+            else:
+                spe.append(Proj(proj_x, proj_y, False, True, proj_dir))
+            self.last_shot_time = current_time
+        
         
             
         

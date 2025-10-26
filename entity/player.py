@@ -56,7 +56,8 @@ class Player(Object):
         
         
         self.SPRITES = load_sprite_sheets(join("assets", "img", "player"), 32, 32, True)
-
+        self.maxHP = 100
+        self.HP = 100
         
         
     def loop(self, fps):

@@ -1,6 +1,7 @@
 import pygame
 from entity.terrain import Terrain
 from entity.coin import Coin # Adding Coin
+from entity.enemy import MeleeEnemy, RangeEnemy
 
 TILE_SIZE = 64  # each block = 64x64 pixels
 
