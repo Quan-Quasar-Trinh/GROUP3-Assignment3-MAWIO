@@ -159,3 +159,6 @@ def handle_move(player, objects):
 
     vertical_collide = handle_vertical_collision(player, objects, player.vy)
     to_check = [collide_left, collide_right, *vertical_collide]
+    
+def showGameOver(player):
+    pass

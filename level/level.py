@@ -49,9 +49,10 @@ class Level:
                     y = row_index * TILE_SIZE
                     terrain_list.append(Terrain(x, y, TILE_SIZE))
         return terrain_list
-    def get_enemies(self):
-        return self.Enemies
-    
+    def get_nor_enemies(self):
+        return [e for e in self.Enemies if not e.special]
+    def get_spe_enemies(self):
+        return [e for e in self.Enemies if e.special]
     def print_coin(self):
         for coin in self.coins:
             coin.draw(screen, camera_x, camera_y)
@@ -95,7 +96,7 @@ class Level2(Level):
     """Main level: longer with small gaps and elevated platforms."""
     def __init__(self):
         terrain_matrix = [
-            [0]*80 for _ in range(8)
+            [0]*80 for _ in range(9)
         ]
 
         # Ground with gaps
@@ -105,10 +106,14 @@ class Level2(Level):
         ])
 
         # Elevated platforms
-        terrain_matrix[5][12:17] = [1]*5
+        terrain_matrix[6][12:17] = [1]*5
         terrain_matrix[4][32:37] = [1]*5
-        terrain_matrix[6][50:55] = [1]*5
-        terrain_matrix[3][60:63] = [1]*3
+        terrain_matrix[6][48:55] = [1]*8
+        terrain_matrix[4][60:63] = [1]*3
+        terrain_matrix[7][30] = 1
+        terrain_matrix[6][60]=1
+        terrain_matrix[5][50] = 1
+
 
         super().__init__(
             level_id=2,
@@ -118,6 +123,21 @@ class Level2(Level):
             coins=[Coin(950, 300, 100), Coin(1150, 300, 100)]
         )
         self.Enemies = []
+        self.Enemies.append(RangeEnemy( 61*64+24,384 ,40, 40, special=True, dir_Left=True))
+        self.Enemies.append(RangeEnemy(11 * 64, 640, 40, 40, special=False, dir_Left=False))    # special guarding left of 1st pit
+        self.Enemies.append(RangeEnemy(13 * 64+24, 640, 40, 40, special=False, dir_Left=True))   # normal right of 1st pit
+
+        self.Enemies.append(RangeEnemy(31 * 64, 640, 40, 40, special=False, dir_Left=False))  # normal left of 2nd pit
+        self.Enemies.append(RangeEnemy(33 * 64+24, 640, 40, 40, special=False, dir_Left=True))    # special right of 2nd pit
+
+        self.Enemies.append(RangeEnemy(56 * 64, 640, 40, 40, special=False, dir_Left=False))   # special left of 3rd pit
+        self.Enemies.append(RangeEnemy(58 * 64+24, 640, 40, 40, special=False, dir_Left=True))   # normal right of 3rd pit
+
+        # Melee enemies roaming freely (some special)
+        self.Enemies.append(MeleeEnemy(20 * 64, 576, 40, 40, special=False))   # normal between pit 1 & 2
+        self.Enemies.append(MeleeEnemy(40 * 64, 576, 40, 40, special=True))    # special between pit 2 & 3
+        self.Enemies.append(MeleeEnemy(62 * 64+90, 576, 40, 40, special=False))   # normal after pit 3
+        self.Enemies.append(MeleeEnemy(62 * 64, 576, 40, 40, special=True)) 
 
 
 # ===========================================================

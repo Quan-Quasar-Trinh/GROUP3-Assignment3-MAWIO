@@ -1,6 +1,6 @@
 import pygame
 import sys
-from utils.gameFunc import draw, get_background, handle_move
+from utils.gameFunc import draw, get_background, handle_move, showGameOver
 from utils.button import Button
 from entity.terrain import Terrain
 from level.level import Level1, Level2, Level3
@@ -86,12 +86,9 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
     camera_x = 0
     camera_y = 32
     
-    Nor_enemies = []
-    Spe_enemies = []
-    Nor_enemies.append(MeleeEnemy(200, 600, 32, 32, False))
-    Nor_enemies.append(RangeEnemy(300, 600, 32, 32,False))
-    Spe_enemies.append(MeleeEnemy(200, 500, 32, 32, True))
-    Spe_enemies.append(RangeEnemy(300, 500, 32, 32,True))
+    Nor_enemies = tiles.get_nor_enemies()
+    Spe_enemies = tiles.get_spe_enemies()
+    
 
     nor_projs = []
     spe_projs = []
@@ -217,12 +214,16 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         for enemy in Spe_enemies:
             if enemy.HP ==0:
                 Spe_enemies.remove(enemy)
+                
         
         # --- Smooth the coin collecting action ---
         for coin in coins_spawn[:]:
             coin.update(player)
             if coin.collected:
                 tiles.coins.remove(coin)
+        if player.HP ==0:
+            showGameOver(player)
+            return "menu", WIDTH, HEIGHT, sound_volume, 1
         
         # --- Drawing ---
         draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn)
