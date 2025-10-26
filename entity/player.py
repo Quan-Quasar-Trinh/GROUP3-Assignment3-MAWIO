@@ -98,7 +98,7 @@ class Player(Object):
     def shoot(self, nor, spe, setting):
         """Shoot only if cooldown has passed."""
         current_time = pygame.time.get_ticks()
-        if current_time - self.last_shot_time < self.SHOOT_COOLDOWN:
+        if current_time - self.last_shot_time < (self.SHOOT_COOLDOWN / self.atk_speed):
             return  # too soon to shoot again
 
         # Update last shot time
