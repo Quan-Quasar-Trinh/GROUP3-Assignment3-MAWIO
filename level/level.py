@@ -3,6 +3,8 @@ from entity.terrain import Terrain
 from entity.coin import Coin # Adding Coin
 from entity.enemy import MeleeEnemy, RangeEnemy, Boss
 from entity.container import Container
+from entity.portal import Portal
+
 
 TILE_SIZE = 64  # each block = 64x64 pixels
 
@@ -91,6 +93,8 @@ class Level1(Level):
             containers=[Container(1000, 500, 100)]
         )
         self.Enemies = []
+        self.portal = Portal(5000, 576, 64, 96)
+        
 
 
 
@@ -144,6 +148,8 @@ class Level2(Level):
         self.Enemies.append(MeleeEnemy(62 * 64+90, 576, 40, 40, special=False))   # normal after pit 3
         self.Enemies.append(MeleeEnemy(62 * 64, 576, 40, 40, special=True)) 
 
+        
+        self.portal = Portal(5000, 512, 64, 96) 
     
 # ===========================================================
 #                        LEVEL 3
@@ -173,3 +179,4 @@ class Level3(Level):
             coins=[Coin(200, 500, 100), Coin(400, 500, 100), Coin (290, 360, 100), Coin (290, 160, 100)]
         )
         self.boss = Boss(1100, 64, 240,240)
+        self.portal = None

@@ -8,6 +8,12 @@ def menu(WIDTH, HEIGHT, sound_volume):
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     
+    pygame.mixer.init()
+    
+    pygame.mixer.music.load("assets/bgm/menu.mp3")  # <-- your menu BGM path
+    pygame.mixer.music.set_volume(sound_volume / 100)         # convert % to 0.0–1.0
+    pygame.mixer.music.play(-1)
+    
     setting = False
 
     # --- Load background and gear icon ---

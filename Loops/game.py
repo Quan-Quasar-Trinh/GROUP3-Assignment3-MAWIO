@@ -9,7 +9,7 @@ from entity.player import Player
 from entity.proj import Proj
 from entity.enemy import Enemy, MeleeEnemy, RangeEnemy
 from entity.coin import Coin # Add Coin
-
+from entity.portal import Portal
 FPS = 60
 
 def game(WIDTH, HEIGHT, sound_volume, level=1):
@@ -78,9 +78,20 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
             
     
     
-    tiles = load_level(level)    
+    tiles = load_level(level)  
+    pygame.mixer.init()
+
+
+    bgm_path = f"assets/bgm/{tiles.level_id}.mp3"  
+    pygame.mixer.music.load(bgm_path)
+    pygame.mixer.music.set_volume(sound_volume / 100.0)
+    pygame.mixer.music.play(-1)  # loop indefinitely
+    
+    
     coins_spawn = tiles.coins
     cont_spawn = tiles.containers
+    portal = tiles.portal
+    
     for coin in coins_spawn:
         coin.adj_vol(sound_volume)
     player = Player(tiles.spawn[0], tiles.spawn[1], 50, 50)
@@ -130,13 +141,18 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
                     if level < 3:
                         level += 1
                         print(f"Level increased to {level}")
+                        pygame.mixer.music.stop()
                         return "game", WIDTH, HEIGHT, sound_volume, level
                     else:
                         print("Reached final level, returning to menu...")
+                        pygame.mixer.music.stop()
                         return "menu", WIDTH, HEIGHT, sound_volume, 1
                 elif event.key == pygame.K_b:
                     if boss:
                         boss.hp /=2
+                elif event.key == pygame.K_v:
+                    if boss:
+                        boss.hp =0
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pygame.mouse.get_pos()
@@ -241,7 +257,9 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         
         if boss:
             boss.update(pygame.time.get_ticks(), player, boss_proj, terrain_positions)
-                
+            if boss.hp ==0:
+                portal = Portal(1100, 512, 64, 96)
+                boss = None
         
         # --- Smooth the coin collecting action ---
         for coin in coins_spawn[:]:
@@ -251,9 +269,20 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         if player.HP ==0:
             showGameOver(player)
             return "menu", WIDTH, HEIGHT, sound_volume, 1
+        if portal:
+            if player.rect.colliderect(portal.rect):
+                if level < 3:
+                    level += 1
+                    print(f"Level increased to {level}")
+                    pygame.mixer.music.stop()
+                    return "game", WIDTH, HEIGHT, sound_volume, level
+                else:
+                    print("Reached final level, returning to menu...")
+                    pygame.mixer.music.stop()
+                    return "menu", WIDTH, HEIGHT, sound_volume, 1
         
         # --- Drawing ---
-        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn, boss, boss_proj, cont_spawn)
+        draw(base_surface, bg_surface, setting, gear_img, gear_rect, BASE_WIDTH, BASE_HEIGHT, font, sound_volume, back_button, menu_button, res_button, vol_minus, vol_plus, WIDTH, HEIGHT, screen, terrain_positions, camera_x, camera_y, player, nor_projs, spe_projs, Nor_enemies, Spe_enemies, coins_spawn, boss, boss_proj, cont_spawn, portal)
 
         pygame.display.flip()
 
