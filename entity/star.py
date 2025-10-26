@@ -68,6 +68,8 @@ class Star(Object):
             # Give player power-up: 2× attack speed
             if hasattr(player, "atk_speed"):
                 player.atk_speed *= 2
+                if player.HP < 100:
+                    player.HP += 10
             print("Player attack speed doubled!")
 
     def draw(self, screen, camera_x, camera_y):
