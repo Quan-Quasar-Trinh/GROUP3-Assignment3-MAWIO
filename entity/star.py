@@ -15,7 +15,7 @@ def load_sprite_sheets(path, width, height):
 
 
 class Star(Object):
-    def __init__(self, x, y):
+    def __init__(self, x, y, volume=100):
         width, height = 32, 32
         super().__init__(x, y, width * 2, height * 2, "Star")
 
@@ -30,15 +30,25 @@ class Star(Object):
         self.gravity = 0.2
         self.on_ground = False
 
-    def update(self, container):
-        """Animate and apply simple gravity + collision."""
-        # Animation
+        # Collection state
+        self.collected = False
+
+        # Sound
+        self.sound = pygame.mixer.Sound("assets/sfx/coin.wav")
+        self.sound.set_volume(volume / 100)
+
+    def update(self, container, player=None):
+        """Animate, move, and handle player collection."""
+        if self.collected:
+            return  # already taken, skip
+
+        # --- Animate ---
         self.frame_index += self.animation_speed
         if self.frame_index >= len(self.frames):
             self.frame_index = 0
         self.image = self.frames[int(self.frame_index)]
 
-        # Movement
+        # --- Movement ---
         if not self.on_ground:
             self.vy += self.gravity
             self.rect.y += self.vy
@@ -49,5 +59,17 @@ class Star(Object):
                 self.vy = 0
                 self.on_ground = True
 
+        # --- Check player collision ---
+        if player and self.rect.colliderect(player.rect):
+            self.collected = True
+            if self.sound:
+                self.sound.play()
+
+            # Give player power-up: 2× attack speed
+            if hasattr(player, "atk_speed"):
+                player.atk_speed *= 2
+            print("Player attack speed doubled!")
+
     def draw(self, screen, camera_x, camera_y):
-        screen.blit(self.image, (self.rect.x - camera_x, self.rect.y - camera_y))
+        if not self.collected:
+            screen.blit(self.image, (self.rect.x - camera_x, self.rect.y - camera_y))

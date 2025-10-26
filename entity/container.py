@@ -33,7 +33,7 @@ class Container(Object):
             star_y = self.rect.top - 16      # slightly above container
             self.star = Star(star_x, star_y)
             self.star_spawned = True
-            print("⭐ Star released!")
+            print("Star released!")
 
     def update(self, player):
         """Update bounce and star movement."""
@@ -56,7 +56,7 @@ class Container(Object):
                     self.visible = False        # optional: hide after bounce
 
         if self.star_spawned and self.star:
-            self.star.update(self)
+            self.star.update(self, player)
 
     def draw(self, screen, camera_x, camera_y):
         """Draw the container and its star."""

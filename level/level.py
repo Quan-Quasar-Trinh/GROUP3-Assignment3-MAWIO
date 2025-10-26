@@ -89,7 +89,7 @@ class Level1(Level):
             map_size=(5120, 704),
             terrain_matrix=terrain_matrix,
             coins=[Coin(400, 500, 100), Coin(600, 500, 100)]
-            ,containers=[Container(1000, 500, 100)]
+            ,containers=[Container(1000, 600, 100)]
         )
         self.Enemies = []
 
