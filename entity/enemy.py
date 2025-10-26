@@ -12,7 +12,7 @@ class Enemy(Object):
         self.HP = HP
         self.special = special
         self.dir_left = True
-        
+        self.contactDmg = 10
         self.baseX = x
         self.baseY = y
         
@@ -78,7 +78,7 @@ class MeleeEnemy(Enemy):
     def __init__(self, x, y, width, height, special = False):
         super().__init__(x, y, width, height,special, 100,  "Melee") 
         self.speed = 2
-    def update(self, nor, spe, setting):
+    def update(self, nor, spe, setting, player):
         if not self.special and setting:
             return
         if abs(self.rect.x - self.baseX) >=150:
@@ -87,6 +87,10 @@ class MeleeEnemy(Enemy):
             self.rect.x -= self.speed
         else:
             self.rect.x +=self.speed
+        if self.rect.colliderect(player.rect) and not player.Invin:
+            player.Invin = True
+            player.InvinTime = time.time()
+            player.HP-=self.contactDmg
             
 class RangeEnemy(Enemy):
     RangeShootCD = 1.0 #one sec
@@ -95,7 +99,7 @@ class RangeEnemy(Enemy):
         self.last_shot_time = time.time()  # thời điểm lần bắn cuối
         self.shootCD = RangeEnemy.RangeShootCD
         self.dir_left = dir_Left
-    def update(self, nor, spe, setting):
+    def update(self, nor, spe, setting, player):
         """Không di chuyển, chỉ bắn mỗi 1 giây."""
         current_time = time.time()
         proj_x = self.rect.centerx

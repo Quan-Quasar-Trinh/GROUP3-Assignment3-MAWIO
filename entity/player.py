@@ -2,6 +2,7 @@ import os
 import random
 import math
 import pygame
+import time
 from os import listdir
 from os.path import isfile, join
 
@@ -58,13 +59,15 @@ class Player(Object):
         self.SPRITES = load_sprite_sheets(join("assets", "img", "player"), 32, 32, True)
         self.maxHP = 100
         self.HP = 100
-        
-        
+        self.Invin = False
+        self.InvinTime = 0
     def loop(self, fps):
         # Apply gravity
         self.vy += min(1, (self.fall_count / fps) * self.GRAVITY)
         self.move(self.vx, self.vy)
         self.fall_count += 1
+        if time.time()-self.InvinTime >=1:
+            self.Invin = False
         
         self.update_sprite()
         

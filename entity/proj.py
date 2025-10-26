@@ -1,5 +1,5 @@
 import pygame
-
+import time
 class Proj:
     def __init__(self, x, y, ally, special, direction, dmg = 10):
         self.rect = pygame.Rect(x,y,20,4)
@@ -45,7 +45,9 @@ class Proj:
             
         #Collision to Player/Enemy
         if not self.ally:
-            if self.rect.colliderect(player.rect):
+            if self.rect.colliderect(player.rect) and not player.Invin:
+                player.Invin = True
+                player.InvinTime = time.time()
                 self.destroyed = True
                 player.HP -= self.dmg
                 if player.HP<0:

@@ -187,7 +187,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         player.loop(FPS)
         if not setting:
             for enemy in Nor_enemies:
-                enemy.update(nor_projs, spe_projs, setting)
+                enemy.update(nor_projs, spe_projs, setting, player)
             for proj in (nor_projs):
                 proj.update(terrain_positions, player, Nor_enemies, Spe_enemies)
                 if proj.destroyed == True:
@@ -207,7 +207,7 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         handle_move(player, terrain_positions)
         
         for enemy in Spe_enemies:
-            enemy.update(nor_projs, spe_projs, setting)
+            enemy.update(nor_projs, spe_projs, setting, player)
         for enemy in Nor_enemies:
             if enemy.HP ==0:
                 Nor_enemies.remove(enemy)
