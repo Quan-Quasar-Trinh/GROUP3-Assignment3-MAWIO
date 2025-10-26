@@ -6,15 +6,11 @@ class Container(Object):
     def __init__(self, x, y, volume=100):
         super().__init__(x, y, 48, 48, "Container")
 
-        # Load terrain sprite sheet
         terrain_image = pygame.image.load("assets/img/block/Terrain.png").convert_alpha()
-
-        # Pick a nice yellow container tile (adjust coordinates as needed)
         self.block_img = terrain_image.subsurface(pygame.Rect(0, 0, 48, 48))
 
-        # State
         self.used = False
-        self.visible = True       # new: disappears after bounce done
+        self.visible = True
         self.star_spawned = False
         self.star = None
         self.volume = volume
@@ -32,38 +28,38 @@ class Container(Object):
             self.used = True
             self.bouncing = True
 
-            # Spawn star slightly above the block
-            self.star = Star(self.rect.centerx - 16, self.rect.y - 60, self.volume)
+            # Spawn star just above the container
+            star_x = self.rect.centerx - 8   # center horizontally
+            star_y = self.rect.top - 16      # slightly above container
+            self.star = Star(star_x, star_y)
             self.star_spawned = True
             print("⭐ Star released!")
 
     def update(self, player):
         """Update bounce and star movement."""
-        # Handle bounce animation
         if self.bouncing:
             self.rect.y += self.bounce_speed
-            self.bounce_offset += abs(self.bounce_speed)
 
-            # Reverse direction at max height
-            if self.bounce_offset >= self.bounce_height:
-                self.bounce_speed *= -1
+            # Move upward until reaching max bounce height
+            if self.bounce_speed < 0:
+                if self.rect.y <= self.original_y - self.bounce_height:
+                    self.rect.y = self.original_y - self.bounce_height
+                    self.bounce_speed = abs(self.bounce_speed)  # reverse direction
 
-            # Stop when back to original position
-            if self.bounce_speed > 0 and self.rect.y >= self.original_y:
-                self.rect.y = self.original_y
-                self.bouncing = False
-                self.bounce_speed = -4
-                self.bounce_offset = 0
+            # Move downward until reaching original position
+            else:
+                if self.rect.y >= self.original_y:
+                    self.rect.y = self.original_y
+                    self.bouncing = False
+                    self.bounce_speed = -4      # reset for next time
+                    self.bounce_offset = 0
+                    self.visible = False        # optional: hide after bounce
 
-                # Disappear after bounce ends
-                self.visible = False
-
-        # Update star
         if self.star_spawned and self.star:
-            self.star.update(player)
+            self.star.update(self)
 
     def draw(self, screen, camera_x, camera_y):
-        """Draw the container block and its star (if visible)."""
+        """Draw the container and its star."""
         if self.visible:
             screen.blit(
                 self.block_img,

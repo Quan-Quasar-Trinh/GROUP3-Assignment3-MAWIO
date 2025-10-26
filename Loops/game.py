@@ -214,8 +214,8 @@ def game(WIDTH, HEIGHT, sound_volume, level=1):
         # handle_move(player, terrain_positions)
         
         # Adding hitting container
-        hit = terrain_positions + cont_spawn
-        handle_move(player, terrain_positions)
+        hit = terrain_positions + [c for c in cont_spawn if not c.used]
+        handle_move(player, hit)
         
         for enemy in Spe_enemies:
             enemy.update(nor_projs, spe_projs, setting, player)
